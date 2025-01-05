@@ -10,27 +10,30 @@
       <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
       <style>
-            #editor-container {
-                  height: calc(100vh - 160px);
-                  border: 1px solid #374151;
-                  border-radius: 0.375rem;
+            body {
+                  background: rgba(255, 255, 255, 0.1);
+                  backdrop-filter: blur(10px);
+                  color: #f8fafc;
+                  font-family: 'Fira Code', monospace;
             }
 
-            .monaco-editor {
-                  padding: 8px;
+            #editor-container {
+                  height: calc(100vh - 200px);
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  border-radius: 0.5rem;
+                  background: rgba(255, 255, 255, 0.2);
             }
 
             .custom-scrollbar::-webkit-scrollbar {
                   width: 8px;
-                  height: 8px;
             }
 
             .custom-scrollbar::-webkit-scrollbar-track {
-                  background: #1f2937;
+                  background: rgba(255, 255, 255, 0.1);
             }
 
             .custom-scrollbar::-webkit-scrollbar-thumb {
-                  background: #4b5563;
+                  background: rgba(255, 255, 255, 0.4);
                   border-radius: 4px;
             }
 
@@ -43,84 +46,86 @@
 
             .file-explorer {
                   width: 250px;
-                  border-right: 1px solid #374151;
+                  border-right: 1px solid rgba(255, 255, 255, 0.2);
             }
 
             #terminal {
                   height: 200px;
                   overflow-y: auto;
                   font-family: 'Fira Code', monospace;
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  border-radius: 0.5rem;
             }
       </style>
 </head>
 
-<body class="bg-gray-900 text-gray-100 min-h-screen">
-      <div class="flex h-screen">
-            <!-- File Explorer -->
-            <div class="file-explorer bg-gray-800 p-4 overflow-y-auto custom-scrollbar">
-                  <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-bold">Explorer</h2>
-                        <button id="new-file-btn" class="text-gray-400 hover:text-white">
-                              <i class="bi bi-plus-lg"></i>
-                        </button>
-                  </div>
-                  <div id="file-list" class="space-y-2">
-                        <!-- Files will be listed here -->
-                  </div>
+<body class="min-h-screen flex">
+      <div class="file-explorer bg-gray-800 p-4 overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-4">
+                  <h2 class="font-bold">Explorer</h2>
+                  <button id="new-file-btn" class="text-gray-400 hover:text-white">
+                        <i class="bi bi-plus-lg"></i>
+                  </button>
             </div>
-
-            <!-- Main Editor Area -->
-            <div class="flex-1 flex flex-col">
-                  <!-- Top Toolbar -->
-                  <div class="bg-gray-800 p-4 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                              <select id="language-selector"
-                                    class="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg border border-gray-600">
-                                    <option value="javascript">JavaScript</option>
-                                    <option value="python">Python</option>
-                                    <option value="cpp">C++</option>
-                                    <option value="java">Java</option>
-                                    <option value="ruby">Ruby</option>
-                                    <option value="golang">Go</option>
-                                    <option value="rust">Rust</option>
-                                    <option value="typescript">TypeScript</option>
-                                    <option value="php">PHP</option>
-                                    <option value="csharp">C#</option>
-                              </select>
-                              <button id="run-btn"
-                                    class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg flex items-center space-x-2">
-                                    <i class="bi bi-play-fill"></i>
-                                    <span>Run</span>
-                              </button>
-                              <button id="save-btn"
-                                    class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg flex items-center space-x-2">
-                                    <i class="bi bi-save"></i>
-                                    <span>Save</span>
-                              </button>
-                        </div>
-                        <button id="settings-btn"
-                              class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2">
-                              <i class="bi bi-gear"></i>
-                              <span>Settings</span>
-                        </button>
-                  </div>
-
-                  <!-- Tabs -->
-                  <div id="tabs" class="bg-gray-800 border-b border-gray-700 flex overflow-x-auto custom-scrollbar">
-                        <!-- Tabs will be added here -->
-                  </div>
-
-                  <!-- Editor -->
-                  <div id="editor-container"></div>
-
-                  <!-- Terminal -->
-                  <div id="terminal" class="bg-gray-800 p-4 text-sm custom-scrollbar">
-                        <div class="text-gray-400">Terminal ready...</div>
-                  </div>
+            <div id="folder-list" class="space-y-2">
+                  <!-- Folders will be listed here -->
+            </div>
+            <div id="file-list" class="space-y-2">
+                  <!-- Files will be listed here -->
             </div>
       </div>
 
-      <!-- Settings Modal -->
+      <div class="flex-1 flex flex-col bg-gray-900">
+            <div class="bg-gray-800 p-4 flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                        <select id="language-selector"
+                              class="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg border border-gray-600">
+                              <option data-icon="bi bi-filetype-js" value="javascript">JavaScript</option>
+                              <option data-icon="bi bi-filetype-py" value="python">Python</option>
+                              <option data-icon="bi bi-filetype-cpp" value="cpp">C++</option>
+                              <option data-icon="bi bi-filetype-java" value="java">Java</option>
+                              <option data-icon="bi bi-filetype-rb" value="ruby">Ruby</option>
+                              <option data-icon="bi bi-filetype-go" value="golang">Go</option>
+                              <option data-icon="bi bi-filetype-rs" value="rust">Rust</option>
+                              <option data-icon="bi bi-filetype-ts" value="typescript">TypeScript</option>
+                              <option data-icon="bi bi-filetype-php" value="php">PHP</option>
+                              <option data-icon="bi bi-filetype-cs" value="csharp">C#</option>
+                              <option data-icon="bi bi-filetype-sw" value="swift">Swift</option>
+                              <option data-icon="bi bi-filetype-kt" value="kotlin">Kotlin</option>
+                              <option data-icon="bi bi-filetype-html" value="html">HTML</option>
+                              <option data-icon="bi bi-filetype-css" value="css">CSS</option>
+                              <option data-icon="bi bi-filetype-md" value="markdown">Markdown</option>
+                        </select>
+                        <button id="run-btn"
+                              class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg flex items-center space-x-2">
+                              <i class="bi bi-play-fill"></i>
+                              <span>Run</span>
+                        </button>
+                        <button id="save-btn"
+                              class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg flex items-center space-x-2">
+                              <i class="bi bi-save"></i>
+                              <span>Save</span>
+                        </button>
+                  </div>
+                  <button id="settings-btn"
+                        class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                  </button>
+            </div>
+
+            <div id="tabs" class="bg-gray-800 border-b border-gray-700 flex overflow-x-auto custom-scrollbar">
+                  <!-- Tabs will be added here -->
+            </div>
+
+            <div id="editor-container"></div>
+
+            <div id="terminal" class="bg-gray-800 p-4 text-sm custom-scrollbar">
+                  <div class="text-gray-400">Terminal ready...</div>
+            </div>
+      </div>
+
       <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
             <div class="bg-gray-800 p-6 rounded-lg w-[600px]">
                   <h2 class="text-xl font-bold mb-4">Editor Settings</h2>
@@ -133,6 +138,7 @@
                                           <option value="vs-light">Light</option>
                                           <option value="hc-black">High Contrast Dark</option>
                                           <option value="hc-light">High Contrast Light</option>
+                                          <option value="my-custom-theme">Custom Theme</option>
                                     </select>
                               </div>
                               <div>
@@ -174,7 +180,6 @@
             </div>
       </div>
 
-      <!-- New File Modal -->
       <div id="new-file-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
             <div class="bg-gray-800 p-6 rounded-lg w-96">
                   <h2 class="text-xl font-bold mb-4">New File</h2>
@@ -192,12 +197,9 @@
       <script>
             require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' } });
             require(['vs/editor/editor.main'], function () {
-                  // State
                   let currentFile = null;
                   let files = {};
                   let editor;
-
-                  // Initialize editor
                   editor = monaco.editor.create(document.getElementById('editor-container'), {
                         value: '// Start coding here...',
                         language: 'javascript',
@@ -211,20 +213,15 @@
                         tabSize: 4
                   });
 
-                  // Load saved settings
                   const savedSettings = JSON.parse(localStorage.getItem('editorSettings') || '{}');
                   if (Object.keys(savedSettings).length) {
                         editor.updateOptions(savedSettings);
                         monaco.editor.setTheme(savedSettings.theme || 'vs-dark');
                   }
 
-                  // File management
                   function createNewFile(filename) {
                         if (!filename.includes('.')) filename += '.js';
-                        files[filename] = {
-                              content: '',
-                              language: getLanguageFromExtension(filename)
-                        };
+                        files[filename] = { content: '', language: getLanguageFromExtension(filename) };
                         addFileToExplorer(filename);
                         openFile(filename);
                   }
@@ -241,7 +238,10 @@
                               'rs': 'rust',
                               'ts': 'typescript',
                               'php': 'php',
-                              'cs': 'csharp'
+                              'cs': 'csharp',
+                              'html': 'html',
+                              'css': 'css',
+                              'md': 'markdown'
                         };
                         return languageMap[ext] || 'plaintext';
                   }
@@ -252,7 +252,7 @@
                         fileElement.className = 'flex items-center justify-between p-2 hover:bg-gray-700 rounded cursor-pointer';
                         fileElement.innerHTML = `
                     <span class="flex items-center">
-                        <i class="bi bi-file-earmark-code mr-2"></i>
+                        <i class="bi ${getLanguageIcon(filename)} mr-2"></i>
                         ${filename}
                     </span>
                     <button class="delete-file text-gray-400 hover:text-red-500">
@@ -265,6 +265,26 @@
                               deleteFile(filename);
                         };
                         fileList.appendChild(fileElement);
+                  }
+
+                  function getLanguageIcon(filename) {
+                        const ext = filename.split('.').pop();
+                        const iconMap = {
+                              'js': 'bi-filetype-js',
+                              'py': 'bi-filetype-py',
+                              'cpp': 'bi-filetype-cpp',
+                              'java': 'bi-filetype-java',
+                              'rb': 'bi-filetype-rb',
+                              'go': 'bi-filetype-go',
+                              'rs': 'bi-filetype-rs',
+                              'ts': 'bi-filetype-ts',
+                              'php': 'bi-filetype-php',
+                              'cs': 'bi-filetype-cs',
+                              'html': 'bi-filetype-html',
+                              'css': 'bi-filetype-css',
+                              'md': 'bi-filetype-md'
+                        };
+                        return iconMap[ext] || 'bi-file-earmark';
                   }
 
                   function openFile(filename) {
@@ -295,8 +315,7 @@
                         tabsContainer.innerHTML = '';
                         Object.keys(files).forEach(filename => {
                               const tab = document.createElement('div');
-                              tab.className = `file-tab px-4 py-2 border-r border-gray-700 flex items-center space-x-2 cursor-pointer 
-                                   ${currentFile === filename ? 'bg-gray-700' : 'bg-gray-800 hover:bg-gray-700'}`;
+                              tab.className = `file-tab px-4 py-2 border-r border-gray-700 flex items-center space-x-2 cursor-pointer ${currentFile === filename ? 'bg-gray-700' : 'bg-gray-800 hover:bg-gray-700'}`;
                               tab.innerHTML = `
                         <span>${filename}</span>
                         <button class="text-gray-400 hover:text-red-500">×</button>
@@ -310,7 +329,6 @@
                         });
                   }
 
-                  // Event Listeners
                   document.getElementById('new-file-btn').onclick = () => {
                         document.getElementById('new-file-modal').classList.remove('hidden');
                   };
@@ -329,7 +347,6 @@
                         document.getElementById('new-file-name').value = '';
                   };
 
-                  // Settings management
                   document.getElementById('settings-btn').onclick = () => {
                         document.getElementById('settings-modal').classList.remove('hidden');
                   };
@@ -353,24 +370,34 @@
                         document.getElementById('settings-modal').classList.add('hidden');
                   };
 
-                  // Run code
                   document.getElementById('run-btn').onclick = () => {
                         const terminal = document.getElementById('terminal');
                         terminal.innerHTML = '<div class="text-green-400">Running code...</div>';
 
-                        try {
-                              const code = editor.getValue();
-                              // Simulated execution - replace with actual API integration
-                              setTimeout(() => {
-                                    terminal.innerHTML += `<div class="text-gray-300">$ node ${currentFile || 'script.js'}\n${code}\n</div>`;
+                        const code = editor.getValue();
+                        const language = files[currentFile].language;
+
+                        fetch('https://api.jdoodle.com/v1/execute', {
+                              method: 'POST',
+                              headers: {
+                                    'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                    script: code,
+                                    language: language,
+                                    versionIndex: "0",
+                                    clientId: "YOUR_CLIENT_ID",
+                                    clientSecret: "YOUR_CLIENT_SECRET"
+                              })
+                        }).then(response => response.json())
+                              .then(data => {
+                                    terminal.innerHTML += `<div class="text-gray-300">${data.output || data.error}</div>`;
                                     terminal.scrollTop = terminal.scrollHeight;
-                              }, 1000);
-                        } catch (error) {
-                              terminal.innerHTML += `<div class="text-red-400">Error: ${error.message}</div>`;
-                        }
+                              }).catch(error => {
+                                    terminal.innerHTML += `<div class="text-red-400">Error: ${error.message}</div>`;
+                              });
                   };
 
-                  // Save functionality
                   document.getElementById('save-btn').onclick = () => {
                         if (currentFile) {
                               files[currentFile].content = editor.getValue();
@@ -380,7 +407,6 @@
                         }
                   };
 
-                  // Keyboard shortcuts
                   document.addEventListener('keydown', (e) => {
                         if (e.ctrlKey && e.key === 's') {
                               e.preventDefault();
